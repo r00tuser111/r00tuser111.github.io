@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>水泡泡 - kking</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content on 水泡泡 - kking</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <copyright>水泡泡-kking</copyright>
+    <lastBuildDate>Sat, 03 May 2025 10:51:39 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>http://localhost:1313/about/</link>
+      <pubDate>Sat, 03 May 2025 10:51:39 +0800</pubDate>
+      <guid>http://localhost:1313/about/</guid>
+      <description>&lt;h1 id=&#34;关于&#34;&gt;关于&lt;/h1&gt;&#xA;&lt;p&gt;我是水泡泡-kking，早期ID是r00tuser，现就职于国内某乙方安全公司，担任安全研究员。&lt;/p&gt;&#xA;&lt;p&gt;目前主要在做漏洞攻防，围绕漏洞的生命周期对产品进行赋能。还有AI之于安全的研究如：AI写POC，AI基于日志挖漏洞，AI加速最新漏洞研究等。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
