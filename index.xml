@@ -1,4 +1,65 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>水泡泡 - kking</title><link>https://r00tuser111.github.io/</link><description>Recent content on 水泡泡 - kking</description><generator>Hugo</generator><language>zh-cn</language><copyright>水泡泡-kking</copyright><lastBuildDate>Sat, 28 Jun 2025 09:09:05 +0800</lastBuildDate><atom:link href="https://r00tuser111.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>你好 世界</title><link>https://r00tuser111.github.io/post/first-post/</link><pubDate>Sat, 28 Jun 2025 09:09:05 +0800</pubDate><guid>https://r00tuser111.github.io/post/first-post/</guid><description>&lt;p>你好&lt;/p>
-&lt;p>&lt;img src="https://r00tuser111.github.io/post/first-post/head.jpg" alt="head.jpeg" loading="lazy" />&lt;/p></description></item><item><title>About</title><link>https://r00tuser111.github.io/about/</link><pubDate>Sat, 03 May 2025 10:51:39 +0800</pubDate><guid>https://r00tuser111.github.io/about/</guid><description>&lt;h1 id="关于">关于&lt;/h1>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>水泡泡 - kking</title><link>https://r00tuser111.github.io/</link><description>Recent content on 水泡泡 - kking</description><generator>Hugo</generator><language>zh-cn</language><copyright>水泡泡-kking</copyright><lastBuildDate>Sat, 28 Jun 2025 16:24:23 +0800</lastBuildDate><atom:link href="https://r00tuser111.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>某网关代码审计记录</title><link>https://r00tuser111.github.io/post/gateway_code_audit/</link><pubDate>Sat, 28 Jun 2025 16:24:23 +0800</pubDate><guid>https://r00tuser111.github.io/post/gateway_code_audit/</guid><description>&lt;h1 id="前言">前言&lt;/h1>
+&lt;p>意外拿到该网关源代码，之前也披露了不少&lt;code>RCE&lt;/code>漏洞。&lt;/p>
+&lt;p>面向过程式代码，比较老旧了，没有啥看的欲望，简单审计一下做个记录。&lt;/p>
+&lt;p>外网用的还是很多。&lt;/p>
+&lt;p>&lt;img src="https://r00tuser111.github.io/post/gateway_code_audit/image-20250628163136678.png" alt="image-20250628163136678" loading="lazy" />&lt;/p>
+&lt;h1 id="漏洞分析">漏洞分析&lt;/h1>
+&lt;h2 id="upload_php任意文件上传">&lt;code>upload_**.php&lt;/code>任意文件上传&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-php" data-lang="php">&lt;span class="line">&lt;span class="cl">&lt;span class="k">require&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;php_class/function.php&amp;#39;&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">$upload_dir&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;/www&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">$attachment&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nv">$_FILES&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="s1">&amp;#39;Filedata&amp;#39;&lt;/span>&lt;span class="p">];&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">$filename&lt;/span> &lt;span class="o">=&lt;/span>&lt;span class="nv">$attachment&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="s1">&amp;#39;name&amp;#39;&lt;/span>&lt;span class="p">];&lt;/span> 
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">$fileext&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">substr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">strrchr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$filename&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="s1">&amp;#39;.&amp;#39;&lt;/span>&lt;span class="p">),&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">$path&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nv">$upload_dir&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="s2">&amp;#34;/&amp;#34;&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="nv">$filename&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">move_uploaded_file&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$attachment&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="s1">&amp;#39;tmp_name&amp;#39;&lt;/span>&lt;span class="p">],&lt;/span>&lt;span class="nv">$path&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">$fp&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">fopen&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$path&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="s1">&amp;#39;r&amp;#39;&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">$buf&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">fread&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$fp&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="nx">filesize&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$path&lt;/span>&lt;span class="p">));&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">fclose&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$fp&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">$fp&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="o">@&lt;/span>&lt;span class="nx">fopen&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$path&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="s2">&amp;#34;r&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">	&lt;span class="nv">$head_buf&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="o">@&lt;/span>&lt;span class="nx">fgets&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$fp&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="mi">512&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">	&lt;span class="k">if&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">strncmp&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$head_buf&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="s2">&amp;#34;version&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="mi">7&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">	&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">		&lt;span class="nx">fclose&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$fp&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">		&lt;span class="nv">$errmsg&lt;/span> &lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;文件格式不对！&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">	&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">unlink&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$path&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">unset&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$attachment&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">unset&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$path&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">ob_end_clean&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">$_SESSION&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="s1">&amp;#39;errmsg&amp;#39;&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nv">$errmsg&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>中间省了些逻辑，不影响整体。&lt;/p></description></item><item><title>你好 世界</title><link>https://r00tuser111.github.io/post/first-post/</link><pubDate>Sat, 28 Jun 2025 09:09:05 +0800</pubDate><guid>https://r00tuser111.github.io/post/first-post/</guid><description>&lt;p>你好&lt;/p>
+&lt;p>&lt;img src="https://r00tuser111.github.io/post/first-post/head.jpg" alt="head.jpeg" loading="lazy" />&lt;/p></description></item><item><title>关于</title><link>https://r00tuser111.github.io/about/</link><pubDate>Sat, 03 May 2025 10:51:39 +0800</pubDate><guid>https://r00tuser111.github.io/about/</guid><description>&lt;h1 id="关于">关于&lt;/h1>
 &lt;p>我是水泡泡-kking，早期ID是r00tuser，现就职于国内某乙方安全公司，担任安全研究员。&lt;/p>
-&lt;p>目前主要在做漏洞攻防，围绕漏洞的生命周期对产品进行赋能。&lt;/p></description></item></channel></rss>
+&lt;p>主要在做漏洞攻防，围绕漏洞的生命周期对产品进行赋能。&lt;/p></description></item></channel></rss>
