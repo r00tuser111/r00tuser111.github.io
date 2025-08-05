@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>漏洞复现 on 水泡泡 - kking</title><link>https://r00tuser111.github.io/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/</link><description>Recent content in 漏洞复现 on 水泡泡 - kking</description><generator>Hugo</generator><language>zh-cn</language><copyright>水泡泡-kking</copyright><lastBuildDate>Tue, 05 Aug 2025 14:15:21 +0800</lastBuildDate><atom:link href="https://r00tuser111.github.io/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/index.xml" rel="self" type="application/rss+xml"/><item><title>1Panel &lt;= v2.0.5 远程命令执行（CVE-2025-54424）漏洞复现速记</title><link>https://r00tuser111.github.io/post/1panel_rce_cve_2025_54424/</link><pubDate>Tue, 05 Aug 2025 14:15:21 +0800</pubDate><guid>https://r00tuser111.github.io/post/1panel_rce_cve_2025_54424/</guid><description>&lt;h1 id="前言">前言&lt;/h1>
+&lt;p>日常看漏洞资讯，看到这个漏洞。&lt;/p>
+&lt;p>&lt;img src="image-20250805141844627.png" alt="image-20250805141844627">&lt;/p>
+&lt;p>&lt;code>1Panel&lt;/code>以前接触过，是飞致云的产品。看漏洞描述是未授权的命令执行，那确实是一个严重漏洞。&lt;/p>
+&lt;h1 id="漏洞介绍">漏洞介绍&lt;/h1>
+&lt;p>参考链接 &lt;a href="https://github.com/1Panel-dev/1Panel/security/advisories/GHSA-8j63-96wh-wh3j">Github Advisorie&lt;/a> 写的十分清楚了，漏洞原因与审计过程，甚至POC都给了。&lt;/p></description></item></channel></rss>
