@@ -1,0 +1,127 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge,chrome=1"><title>Happy CLI 启动异常的排查尝试记录 - 水泡泡 - kking</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="水泡泡-kking"><meta name=description content="前言 最近OpenClaw很火，个人感觉体验其实一般，没什么质的飞跃，核心还是自己配skill和各种工具，真要算就是加上了远程控制。
+我认为 Happy + Claude Code 就足够了，但之前能启动的Happy最近死活启动不成功。
+"><meta name=keywords content="漏洞,网络安全,Web安全,安全研究,大模型,红队,安全攻防"><meta name=generator content="Hugo 0.157.0 with theme even"><link rel=canonical href=https://r00tuser111.github.io/post/troubleshooting_happy_cli_startup_errors/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link href=/sass/main.min.af7fd1da18d66c2b017df5b4cae508ef44cfcac3fb4c7c7a327fe4f4f9e28b08.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:url" content="https://r00tuser111.github.io/post/troubleshooting_happy_cli_startup_errors/"><meta property="og:site_name" content="水泡泡 - kking"><meta property="og:title" content="Happy CLI 启动异常的排查尝试记录"><meta property="og:description" content="前言 最近OpenClaw很火，个人感觉体验其实一般，没什么质的飞跃，核心还是自己配skill和各种工具，真要算就是加上了远程控制。
+我认为 Happy + Claude Code 就足够了，但之前能启动的Happy最近死活启动不成功。"><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="post"><meta property="article:published_time" content="2026-03-15T09:00:00+08:00"><meta property="article:modified_time" content="2026-03-15T09:00:00+08:00"><meta property="article:tag" content="Happy"><meta property="article:tag" content="调试"><meta itemprop=name content="Happy CLI 启动异常的排查尝试记录"><meta itemprop=description content="前言 最近OpenClaw很火，个人感觉体验其实一般，没什么质的飞跃，核心还是自己配skill和各种工具，真要算就是加上了远程控制。
+我认为 Happy + Claude Code 就足够了，但之前能启动的Happy最近死活启动不成功。"><meta itemprop=datePublished content="2026-03-15T09:00:00+08:00"><meta itemprop=dateModified content="2026-03-15T09:00:00+08:00"><meta itemprop=wordCount content="1546"><meta itemprop=keywords content="Happy,调试"><meta name=twitter:card content="summary"><meta name=twitter:title content="Happy CLI 启动异常的排查尝试记录"><meta name=twitter:description content="前言 最近OpenClaw很火，个人感觉体验其实一般，没什么质的飞跃，核心还是自己配skill和各种工具，真要算就是加上了远程控制。
+我认为 Happy + Claude Code 就足够了，但之前能启动的Happy最近死活启动不成功。"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>水泡泡-kking</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>首页</li></a><a href=/post/><li class=mobile-menu-item>归档</li></a><a href=/tags/><li class=mobile-menu-item>标签</li></a><a href=/categories/><li class=mobile-menu-item>归类</li></a><a href=/about/><li class=mobile-menu-item>关于</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>水泡泡-kking</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>首页</a></li><li class=menu-item><a class=menu-item-link href=/post/>归档</a></li><li class=menu-item><a class=menu-item-link href=/tags/>标签</a></li><li class=menu-item><a class=menu-item-link href=/categories/>归类</a></li><li class=menu-item><a class=menu-item-link href=/about/>关于</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Happy CLI 启动异常的排查尝试记录</h1><div class=post-meta><span class=post-time>2026-03-15</span><div class=post-category><a href=/categories/%E8%B0%83%E8%AF%95/>调试</a></div><span class=more-meta>约 1546 字 </span><span class=more-meta>预计阅读 4 分钟</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#前言>前言</a></li></ul></li><li><a href=#第一层问题cli-启动直接崩溃>第一层问题：CLI 启动直接崩溃</a><ul><li><a href=#定位过程>定位过程</a></li><li><a href=#修复方案>修复方案</a><ul><li><a href=#1-getorcreatesession>1. getOrCreateSession</a></li><li><a href=#2-getorcreatemachine>2. getOrCreateMachine</a></li><li><a href=#3-api-client-构造函数>3. API Client 构造函数</a></li></ul></li><li><a href=#修复效果>修复效果</a></li></ul></li><li><a href=#第二层问题机器注册失败并误判离线>第二层问题：机器注册失败并误判离线</a><ul><li><a href=#实际情况>实际情况</a></li><li><a href=#修复思路>修复思路</a></li></ul></li><li><a href=#第三层问题remote-mode-react-hook-报错>第三层问题：Remote Mode React Hook 报错</a><ul><li><a href=#原因分析>原因分析</a></li><li><a href=#修复方案-1>修复方案</a></li></ul></li><li><a href=#第四层问题cli-与-app-消息通信异常>第四层问题：CLI 与 App 消息通信异常</a></li><li><a href=#最终发现问题其实不在代码>最终发现：问题其实不在代码</a></li><li><a href=#happy-的正确使用方式>Happy 的正确使用方式</a><ul><li><ul><li><a href=#1-初始化绑定>1 初始化绑定</a></li><li><a href=#2-程序后台启动守护进程>2 程序后台启动守护进程</a></li><li><a href=#3-app-通过守护进程创建-session>3 APP 通过守护进程创建 session</a></li></ul></li></ul></li><li><a href=#总结>总结</a></li></ul></nav></div></div><div class=post-content><h2 id=前言>前言</h2><p>最近<code>OpenClaw</code>很火，个人感觉体验其实一般，没什么质的飞跃，核心还是自己配<code>skill</code>和各种工具，真要算就是加上了远程控制。</p><p>我认为 <code>Happy</code> + <code>Claude Code</code> 就足够了，但之前能启动的<code>Happy</code>最近死活启动不成功。</p><p>于是有了本文，本文内容是<code>AI</code>的尝试和<code>AI</code>总结，本人润色优化，仅作记录。</p><p><img src=/post/troubleshooting_happy_cli_startup_errors/happy.png alt=happy.png loading=lazy></p><p><code>Happy</code>是一个 <strong>monorepo 项目</strong>，包含：</p><ul><li><code>happy-cli</code>：终端侧</li><li><code>happy-app</code>：移动端</li><li><code>happy-server</code>：服务端</li></ul><p>我最开始是通过 <code>npm install -g happy-coder</code>安装的 CLI。一开始启动完全正常，但使用一段时间后，本地启动开始
+<strong>反复报错</strong>，而且有时候报错还不一致。</p><p>想着借助<code>AI</code>来定位修复看看，经过反复的调试，修复了多个看起来"像 bug"的问题，但都无济于事，最后发现是 <strong>Happy 的使用方式</strong>搞错了。</p><h1 id=第一层问题cli-启动直接崩溃>第一层问题：CLI 启动直接崩溃</h1><p>最开始的报错非常简单：</p><pre><code>Cannot read properties of undefined (reading 'id')
+</code></pre><p>有时候甚至只打印：</p><pre><code>Error
+</code></pre><h2 id=定位过程>定位过程</h2><p>顺着堆栈追到：</p><pre><code>packages/happy-cli/src/api/api.ts
+</code></pre><p>问题代码类似这样：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-ts data-lang=ts><span class=line><span class=cl><span class=nx>response</span><span class=p>.</span><span class=nx>data</span><span class=p>.</span><span class=nx>session</span><span class=p>.</span><span class=nx>id</span>
+</span></span><span class=line><span class=cl><span class=nx>response</span><span class=p>.</span><span class=nx>data</span><span class=p>.</span><span class=nx>machine</span><span class=p>.</span><span class=nx>id</span>
+</span></span></code></pre></td></tr></table></div></div><p>如果服务端返回：</p><pre><code>HTTP 200
+</code></pre><p>但响应结构缺失：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;session&#34;</span><span class=p>:</span> <span class=kc>null</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>代码就会直接触发：</p><pre><code>Cannot read properties of undefined (reading 'id')
+</code></pre><p>这属于典型的 <strong>缺少防御性校验</strong>。</p><h2 id=修复方案>修复方案</h2><p><code>AI</code>在几个关键位置增加了校验。</p><h3 id=1-getorcreatesession>1. getOrCreateSession</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-ts data-lang=ts><span class=line><span class=cl><span class=kr>const</span> <span class=nx>raw</span> <span class=o>=</span> <span class=nx>response</span><span class=p>.</span><span class=nx>data</span><span class=o>?</span><span class=p>.</span><span class=nx>session</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=nx>raw</span> <span class=o>||</span> <span class=k>typeof</span> <span class=nx>raw</span><span class=p>.</span><span class=nx>id</span> <span class=o>!==</span> <span class=s1>&#39;string&#39;</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>logger</span><span class=p>.</span><span class=nx>warn</span><span class=p>(</span><span class=s1>&#39;Invalid session response&#39;</span><span class=p>,</span> <span class=nx>response</span><span class=p>.</span><span class=nx>data</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=kc>null</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>避免直接访问：</p><pre><code>undefined.id
+</code></pre><h3 id=2-getorcreatemachine>2. getOrCreateMachine</h3><p>同样增加校验：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-ts data-lang=ts><span class=line><span class=cl><span class=kr>const</span> <span class=nx>raw</span> <span class=o>=</span> <span class=nx>response</span><span class=p>.</span><span class=nx>data</span><span class=o>?</span><span class=p>.</span><span class=nx>machine</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=nx>raw</span> <span class=o>||</span> <span class=k>typeof</span> <span class=nx>raw</span><span class=p>.</span><span class=nx>id</span> <span class=o>!==</span> <span class=s1>&#39;string&#39;</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>logger</span><span class=p>.</span><span class=nx>warn</span><span class=p>(</span><span class=s1>&#39;Invalid machine response&#39;</span><span class=p>,</span> <span class=nx>response</span><span class=p>.</span><span class=nx>data</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=nx>createMinimalMachine</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=3-api-client-构造函数>3. API Client 构造函数</h3><p>防止非法对象继续流入系统：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-ts data-lang=ts><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=nx>session</span><span class=o>?</span><span class=p>.</span><span class=nx>id</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=k>throw</span> <span class=k>new</span> <span class=nb>Error</span><span class=p>(</span><span class=s2>&#34;Invalid session object&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=修复效果>修复效果</h2><p>这样即使服务端返回异常数据结构：</p><ul><li>CLI 不会直接崩溃</li><li>能输出日志用于排查</li></ul><p>看起来问题解决了。</p><p>但实际上 <strong>只是刚开始。</strong></p><h1 id=第二层问题机器注册失败并误判离线>第二层问题：机器注册失败并误判离线</h1><p>修完第一轮错误后，CLI 可以启动了。</p><p>但日志开始出现新的问题：</p><pre><code>Machine registration failed: invalid_response
+Server returned success but response missing machine.id
+</code></pre><p>接着 CLI 会把服务器标记为：</p><pre><code>offline
+</code></pre><h2 id=实际情况>实际情况</h2><p>服务端其实返回了：</p><pre><code>HTTP 200
+</code></pre><p>只是响应 body 不符合 CLI 的结构预期。</p><p>也就是说：</p><blockquote><p>服务端成功了，但 CLI 误判失败。</p></blockquote><h2 id=修复思路>修复思路</h2><p>原代码在这里调用：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-ts data-lang=ts><span class=line><span class=cl><span class=nx>connectionState</span><span class=p>.</span><span class=nx>fail</span><span class=p>()</span>
+</span></span></code></pre></td></tr></table></div></div><p>这会导致客户端认为服务器不可达。</p><p><code>AI</code>改成：</p><blockquote><p>只记录日志，不标记失败。</p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-ts data-lang=ts><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=nx>raw</span> <span class=o>||</span> <span class=o>!</span><span class=nx>raw</span><span class=p>.</span><span class=nx>id</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>logger</span><span class=p>.</span><span class=nx>warn</span><span class=p>(</span><span class=s1>&#39;Invalid machine response&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=nx>createMinimalMachine</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>这样：</p><ul><li>不影响后续 session 创建</li><li>CLI 仍继续运行</li></ul><h1 id=第三层问题remote-mode-react-hook-报错>第三层问题：Remote Mode React Hook 报错</h1><p>解决上面的问题后，CLI 可以进入 <strong>Remote Mode</strong>。</p><p>但新的错误又出现了：</p><pre><code>Invalid hook call
+Cannot read properties of null (reading 'useState')
+</code></pre><p>这类报错通常只会出现在一种情况：</p><blockquote><p>React 实例不一致</p></blockquote><h2 id=原因分析>原因分析</h2><p>Happy CLI UI 是基于：</p><ul><li><code>ink</code></li><li><code>react</code></li></ul><p>而 CLI bundle 内部又打包了一份 React。</p><p>结果运行时出现：</p><pre><code>ink -&gt; React A
+CLI bundle -&gt; React B
+</code></pre><p>React hook dispatcher 只挂在：</p><pre><code>React A
+</code></pre><p>但组件调用的是：</p><pre><code>React B.useState()
+</code></pre><p>于是就变成：</p><pre><code>null.useState
+</code></pre><h2 id=修复方案-1>修复方案</h2><p>强制 CLI 使用 <strong>ink 的 React 实例</strong>。</p><p>在 launcher 中：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-ts data-lang=ts><span class=line><span class=cl><span class=kr>const</span> <span class=nx>ReactForInk</span> <span class=o>=</span> <span class=nx>createRequire</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>  <span class=kr>require</span><span class=p>.</span><span class=nx>resolve</span><span class=p>(</span><span class=s1>&#39;ink&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>)(</span><span class=s1>&#39;react&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>然后渲染 UI：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-ts data-lang=ts><span class=line><span class=cl><span class=nx>ReactForInk</span><span class=p>.</span><span class=nx>createElement</span><span class=p>(</span><span class=nx>RemoteModeDisplay</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>在组件内部：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-ts data-lang=ts><span class=line><span class=cl><span class=kd>function</span> <span class=nx>RemoteModeDisplay</span><span class=p>({</span> <span class=nx>react</span> <span class=p>})</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>{</span> <span class=nx>useState</span><span class=p>,</span> <span class=nx>useEffect</span> <span class=p>}</span> <span class=o>=</span> <span class=nx>react</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>所有 hooks 都从传入的 React 获取。</p><p>这样整棵组件树只使用 <strong>一个 React 实例</strong>。</p><p>Hook 报错消失。</p><h1 id=第四层问题cli-与-app-消息通信异常>第四层问题：CLI 与 App 消息通信异常</h1><p>再往后，看似是正常了，但实际还是不可用：</p><pre><code>happy-cli 能收到 happy-app 的消息
+</code></pre><p>但：</p><pre><code>CLI 发出的消息是否到达 app 不确定
+</code></pre><p>于是<code>AI</code>在发送路径增加了日志，例如：</p><pre><code>Sending envelope
+Flushed N message(s)
+flushOutbox failed
+</code></pre><p>从日志看：</p><pre><code>CLI -&gt; server
+POST 请求基本成功
+</code></pre><p>偶尔失败也会自动重试。</p><p>但：</p><pre><code>app 端仍然收不到消息
+</code></pre><p>后续经过反复的尝试，我发现偶尔又能通过已经构建好的<code>Cli</code>成功启动。</p><h1 id=最终发现问题其实不在代码>最终发现：问题其实不在代码</h1><p>修了这么多代码后，我开始意识到一个问题：</p><blockquote><p>为什么 Happy 一开始是能正常运行的？</p></blockquote><p>于是重新检查使用方式。</p><p>最后发现问题其实非常简单：</p><p><strong>我用错了 Happy 的运行模式。</strong></p><h1 id=happy-的正确使用方式>Happy 的正确使用方式</h1><p>Happy CLI <strong>不是设计成在多个目录分别运行的</strong>。</p><p>正确流程是：</p><h3 id=1-初始化绑定>1 初始化绑定</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>happy
+</span></span></code></pre></td></tr></table></div></div><h3 id=2-程序后台启动守护进程>2 程序后台启动守护进程</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>happy daemon <span class=c1># 无需手动执行</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=3-app-通过守护进程创建-session>3 APP 通过守护进程创建 session</h3><p><img src=/post/troubleshooting_happy_cli_startup_errors/start.jpg alt=start loading=lazy></p><p>而不是：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=nb>cd</span> projectA
+</span></span><span class=line><span class=cl>happy
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>cd</span> projectB
+</span></span><span class=line><span class=cl>happy
+</span></span></code></pre></td></tr></table></div></div><p>这样会产生：</p><pre><code>多个 CLI 实例
+多个 session
+多个 machine 注册
+</code></pre><p>导致状态混乱。</p><p>如果需要重新初始化环境，可以删除：<code>~/.happy/</code>，重新绑定。</p><h1 id=总结>总结</h1><p>瞎折腾半天也没有成功，但好在结果是好的，也不枉费一番尝试。</p><p>从 <code>Claude Code</code> 的出现开始，越来越直观地感受到 <code>AI</code> 的迭代速度，如何更好的将 <code>AI</code> 融入日常工作中，提升效率，需要持续的探索。</p></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+<span class=item-content>水泡泡-kking</span></p><p class=copyright-item><span class=item-title>上次更新</span>
+<span class=item-content>2026-03-15</span></p><p class=copyright-item><span class=item-title>许可协议</span>
+<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc-nd/4.0/ target=_blank>CC BY-NC-ND 4.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/happy/>Happy</a>
+<a href=/tags/%E8%B0%83%E8%AF%95/>调试</a></div><nav class=post-nav><a class=next href=/post/two_bombs_and_h1n1/><span class="next-text nav-default">两“弹”一流</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=gitalk-container></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js crossorigin=anonymous></script><script type=text/javascript>var gitalk=new Gitalk({id:"2026-03-15 09:00:00 +0800 +0800",title:"Happy CLI 启动异常的排查尝试记录",clientID:"Ov23lip9t5W36uGJtB3O",clientSecret:"bba798312008a458f4f526de6b91dd76f210ae04",repo:"r00tuser111.github.io",owner:"r00tuser111",admin:["r00tuser111"],body:decodeURI(location.href)});gitalk.render("gitalk-container")</script><noscript>Please enable JavaScript to view the <a href=https://github.com/gitalk/gitalk>comments powered by gitalk.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:r00tuser@163.com class="iconfont icon-email" title=email></a><a href=https://x.com/_r00tuser class="iconfont icon-twitter" title=twitter></a><a href=https://github.com/r00tuser111 class="iconfont icon-github" title=github></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span><span class=division>|</span>
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span><span class=copyright-year>&copy;
+2025 -
+2026<span class=heart><i class="iconfont icon-heart"></i></span><span>水泡泡-kking</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script><script>var languageCode="zh-cn".replace(/-/g,"_").replace(/_(.*)/,function(e,t){return e.replace(t,t.toUpperCase())});timeago().render(document.querySelectorAll(".timeago"),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script></body></html>
